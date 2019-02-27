@@ -1,2 +1,2 @@
 # Election-Prediction-using-Twitter-Data
-Analyzing Twitter data for analyzing general sentiment of public
+Using social media for political analysis is becoming a common practice, espe-cially during election time. Many researchers and media are trying to use socialmedia to understand the public opinion and trend
