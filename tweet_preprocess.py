@@ -9,6 +9,15 @@ import pandas as pd
 import re
 import numpy as np
 from nltk.stem.porter import *
+import pickle
+
+import pickle
+
+your_data = {'foo': 'bar'}
+
+# Store data (serialize)
+with open('filename.pickle', 'wb') as handle:
+    pickle.dump(your_data, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 # import matplotlib.pyplot as plt
 
@@ -66,6 +75,59 @@ def stemming(tokenized_tweet):
 
 	return tokenized_tweet
 
+def check_tweet(tweet):
+	ans = -1
+
+	if "Donald" in tweet or "Trump" in tweet or "Mike" in tweet or "Pence" in tweet or "Republican" in tweet:
+		ans = 1
+
+	if "Hillary" in tweet or "Clinton" in tweet or "Tim" in tweet or "Kaine" in tweet or "democrats" in tweet or "Democratic" in tweet : 
+		if ans == 1:
+			ans = 10
+		else:
+			ans = 0
+
+
+	return ans
+
+
+
+
+def aspect_term_extraction(pd_DF, tokenized_tweet):
+	"""
+	Currently Aspect term extracted are for Donald, Trump, Hillary, Clinton,Mike, Pence, Tim Kaine, Democratic,Republican,democrats
+
+	"""
+
+	data_dict = dict()
+
+
+	data_dict['Republican'] = list()
+	data_dict['Democratic'] = list()
+
+	no_aspect_Term_found = 0
+	for index,rows in pd_DF.iterrows():
+		ct = check_tweet(rows['text'])
+		
+		if ct == 1:
+			data_dict['Republican'].append(rows['text'])
+		elif ct == 0:
+			data_dict['Democratic'].append(rows['text'])
+		elif ct == 10:
+			data_dict['Republican'].append(rows['text'])
+			data_dict['Democratic'].append(rows['text'])
+		else:
+			no_aspect_Term_found+=1
+
+
+	with open('data_dict.pickle', 'wb') as handle:
+		pickle.dump(data_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+	return data_dict,no_aspect_Term_found
+
+
+
+
 if __name__=="__main__":
 	file_name = "election_day_tweets.csv"
 	df = load_file(file_name)
@@ -87,3 +149,13 @@ if __name__=="__main__":
 	tokenized_tweet = tokenization(df,text_column)
 	print ("Stemming Tweet.........")
 	tokenized_tweet = stemming(tokenized_tweet)
+
+	print("Saving the tokenized sentence")
+	with open('tokenized_tweet.pkl', 'wb') as f:
+		pickle.dump(tokenized_tweet, f)
+
+	print ("Saving the file to pre_process_Data.csv file")
+	df.to_csv('pre_process_Data.csv')
+
+	print ("Diffrentiating terms based on the sentence")
+	data_dict,no_aspect_Term_found = aspect_term_extraction(df,tokenized_tweet)
