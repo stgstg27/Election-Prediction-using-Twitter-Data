@@ -1,19 +1,10 @@
 ###Prediction for election based on twitter data########
 ####### Author : Saurabh Khandelwal ####################
 
-import keras
 import pickle
-
-from keras.models import Sequential
-from keras.layers import Dense
-from keras.layers import Flatten
-from keras.layers.convolutional import Conv1D
-from keras.layers.convolutional import MaxPooling1D
-from keras.layers.embeddings import Embedding
-from keras.models import load_model
-
+from textblob import TextBlob
 import os
-
+import gensim
 
 def load_sentiment_model(filename):
 
@@ -36,20 +27,27 @@ def load_data(filename):
 	
 
 
-def visualize():
-	pass
+def visualize(data, model):
+	plot_model(model, to_file='model_plot.png', show_shapes=True, show_layer_names=True)
+	
 
 
-def predict(data, model):
+def predict(data):
+	score = dict()
 	for key, value in data.iteritems() :
 		print (key)
-		print (len(value))
-		print (model.predict(value[0]))
+		score[key] = 0 
+		for i in range(len(value)):
+			score[key]+=(TextBlob(value[i]).sentiment.polarity)
+
+	for i,value in score.iteritems():
+		print (i,  " : ", value)
+
+
 if __name__ == '__main__':
 	print ("################################## Prediction Start #################################")
-	print (" load_sentiment_model................................................................")
-	model = load_sentiment_model('weights-improvement-05-0.87.hdf5')
+	print (" load_sentiment_model from textblob................................................................")
 	data = load_data("data_dict.pickle")
-	predict(data,model)
+	predict(data)
 
 
