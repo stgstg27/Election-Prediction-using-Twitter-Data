@@ -47,7 +47,7 @@ def predict(data):
 if __name__ == '__main__':
 	print ("################################## Prediction Start #################################")
 	print (" load_sentiment_model from textblob................................................................")
-	data = load_data("data_dict.pickle")
+	data = load_data("IN_data_dict.pickle")
 	predict(data)
 
 
